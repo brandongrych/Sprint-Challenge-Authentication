@@ -1,4 +1,9 @@
 const axios = require('axios');
+const bcrypt = require('bcryptjs');
+const db = require('../database/dbConfig');
+const jwtKey = require('../_secrets/keys').jwtKey
+const jwt = require('jsonwebtoken');
+
 
 const { authenticate, generateToken } = require('./middlewares');
 
@@ -10,11 +15,44 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  const { username, password } = req.body;
+  const credentials = { username, password };
+  
+ 	const hash = bcrypt.hashSync(credentials.password, 12);
+  credentials.password = hash;
+  
+ 	db('users')
+		.insert(credentials)
+		.then(([id]) => {
+			const token = generateToken(id);
+			res.status(201).json({
+				message: `User account ${credentials.username} created`,
+				token
+			});
+		})
+		.catch(err => {
+			res.status(500).json(err);
+		});
 }
 
 function login(req, res) {
   // implement user login
-}
+  const credentials = req.body;
+  	db('users')
+		.where({ username: credentials.username })
+		.then(([user]) => {
+			if (user && bcrypt.compareSync(credentials.password, user.password)) {
+				const token = generateToken(user);
+				res
+					.status(200)
+					.json({ message: `User ${credentials.username} logged in`, token });
+			} else {
+				res.status(401).json({ error: 'Not authorized' });
+			}
+		})
+		.catch(err => res.status(500).json(err));
+}	
+
 
 function getJokes(req, res) {
   axios

@@ -1,26 +1,33 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, { Component, Fragment } from "react";
+import { NavLink, Route, withRouter } from "react-router-dom";
+//import { createGlobalStyle } from "styled-components";
 import './App.css';
+
+
+import Home from "./components/Home.js";
+import Jokes from "./components/Jokes.js";
+import Login from "./components/Login.js";
+import Register from "./components/Register.js";
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <React.Fragment>
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+        <h1>Joke Retriever</h1>
+        <li className='app-link'>
+        <NavLink to="/api/login">
+        <button>Signin</button>
+        </NavLink>
+        </li>
+        <div className='app'>"
+        {/* <Home />
+        <Jokes /> */}
+        <Route path="/api/login" render={() => <Login {...this.props} />} />
+          {/* <Register /> */}
+            </div>
         </header>
-      </div>
+        </React.Fragment>
     );
   }
 }
